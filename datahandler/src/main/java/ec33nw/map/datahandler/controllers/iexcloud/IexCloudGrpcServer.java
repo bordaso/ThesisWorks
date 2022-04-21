@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.concurrent.TimeUnit;
 
 import ec33nw.map.datahandler.controllers.iexcloud.service.IexCloudService;
 import ec33nw.map.datahandler.util.GrpcRestDtoParser;
@@ -16,10 +15,10 @@ import iexcloud.gen.CashflowStatementsGrpc;
 import iexcloud.gen.IexcloudServiceGrpc;
 import iexcloud.gen.IncomeStatementGrpc;
 import iexcloud.gen.IncomeStatementsGrpc;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import iexcloud.gen.Symbol;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import pl.zankowski.iextrading4j.api.refdata.v1.ExchangeSymbol;
 import pl.zankowski.iextrading4j.api.stocks.v1.BalanceSheets;
 import pl.zankowski.iextrading4j.api.stocks.v1.IncomeStatement;
 import pl.zankowski.iextrading4j.api.stocks.v1.Report;
@@ -28,10 +27,7 @@ public class IexCloudGrpcServer {
 
 	private final int port;
 	private final Server server;
-	@Autowired
-	private IexCloudService icService;
-
-	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50051).usePlaintext().build();
+	private static final IexCloudService icService = new IexCloudService();
 
 	public IexCloudGrpcServer(int port) throws IOException {
 		this(ServerBuilder.forPort(port), port);
@@ -41,20 +37,61 @@ public class IexCloudGrpcServer {
 		this.port = port;
 		server = serverBuilder.addService(new IexCloudGrpcService()).build();
 	}
+	
+	  /** Start serving requests. */
+	  public void start() throws IOException {
+	    server.start();
+	    System.out.println("Server started, listening on " + port);
+	    Runtime.getRuntime().addShutdownHook(new Thread() {
+	      @Override
+	      public void run() {
+	        // Use stderr here since the logger may have been reset by its JVM shutdown hook.
+	        System.err.println("*** shutting down gRPC server since JVM is shutting down");
+	        try {
+	        	IexCloudGrpcServer.this.stop();
+	        } catch (InterruptedException e) {
+	          e.printStackTrace(System.err);
+	        }
+	        System.err.println("*** server shut down");
+	      }
+	    });
+	  }
+
+	  /** Stop serving requests and shutdown resources. */
+	  public void stop() throws InterruptedException {
+	    if (server != null) {
+	      server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
+	    }
+	  }
+
+	  /**
+	   * Await termination on the main thread since the grpc library uses daemon threads.
+	   */
+	  public void blockUntilShutdown() throws InterruptedException {
+	    if (server != null) {
+	      server.awaitTermination();
+	    }
+	  }
+
 
 	private class IexCloudGrpcService extends IexcloudServiceGrpc.IexcloudServiceImplBase {
 
 		@Override
 		public void getSymbols(iexcloud.gen.NoParam request,
 				io.grpc.stub.StreamObserver<iexcloud.gen.Symbol> responseObserver) {
-
+			List<ExchangeSymbol> symbols = icService.getSymbols();
+			for(ExchangeSymbol symbol : symbols){
+				responseObserver.onNext(Symbol.newBuilder().setName(symbol.getSymbol()).build());
+				System.out.println("symbol response______" + symbol.toString());
+			}
+			responseObserver.onCompleted();	
 		}
 
 		@Override
 		public void getBalancesheets(iexcloud.gen.Symbol request,
 				io.grpc.stub.StreamObserver<iexcloud.gen.BalanceSheetsGrpc> responseObserver) {		
 			
-			List<? extends BalanceSheetGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
+			List<BalanceSheetGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
 					BalanceSheetGrpc.class, BalanceSheets.class, BalanceSheetGrpc.newBuilder());			
 			BalanceSheetsGrpc response = BalanceSheetsGrpc.newBuilder().addAllBalanceSheetGrpc(statements).build();
 			responseObserver.onNext(response);
@@ -66,7 +103,7 @@ public class IexCloudGrpcServer {
 		public void getIncomeStatements(iexcloud.gen.Symbol request,
 				io.grpc.stub.StreamObserver<iexcloud.gen.IncomeStatementsGrpc> responseObserver) {
 			
-			List<? extends IncomeStatementGrpc> statements = getStatements(icService.getIncomeStatements(request.getName()).getIncome(),
+			List<IncomeStatementGrpc> statements = getStatements(icService.getIncomeStatements(request.getName()).getIncome(),
 					IncomeStatementGrpc.class, IncomeStatement.class, IncomeStatementGrpc.newBuilder());			
 			IncomeStatementsGrpc response = IncomeStatementsGrpc.newBuilder().addAllIncomeStatementGrpc(statements).build();
 			responseObserver.onNext(response);
@@ -78,7 +115,7 @@ public class IexCloudGrpcServer {
 		public void getCashflowStatements(iexcloud.gen.Symbol request,
 				io.grpc.stub.StreamObserver<iexcloud.gen.CashflowStatementsGrpc> responseObserver) {
 			
-			List<? extends CashflowStatementGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
+			List<CashflowStatementGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
 					CashflowStatementGrpc.class, BalanceSheets.class, CashflowStatementGrpc.newBuilder());			
 			CashflowStatementsGrpc response = CashflowStatementsGrpc.newBuilder().addAllCashflowStatementGrpc(statements).build();
 			responseObserver.onNext(response);
@@ -89,7 +126,12 @@ public class IexCloudGrpcServer {
 		@Override
 		public void getPeers(iexcloud.gen.Symbol request,
 				io.grpc.stub.StreamObserver<iexcloud.gen.Symbol> responseObserver) {
-
+			List<String> peers = icService.getPeers(request.getName());
+			for(String peerSymbol : peers){
+				responseObserver.onNext(Symbol.newBuilder().setName(peerSymbol).build());
+				System.out.println("peerSymbol response______" + peerSymbol);
+			}
+			responseObserver.onCompleted();	
 		}
 		
 		private <T extends com.google.protobuf.GeneratedMessageV3, BLDR extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
