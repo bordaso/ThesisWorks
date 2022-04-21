@@ -19,7 +19,8 @@ import iexcloud.gen.Symbol;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import pl.zankowski.iextrading4j.api.refdata.v1.ExchangeSymbol;
-import pl.zankowski.iextrading4j.api.stocks.v1.BalanceSheets;
+import pl.zankowski.iextrading4j.api.stocks.v1.BalanceSheet;
+import pl.zankowski.iextrading4j.api.stocks.v1.CashFlow;
 import pl.zankowski.iextrading4j.api.stocks.v1.IncomeStatement;
 import pl.zankowski.iextrading4j.api.stocks.v1.Report;
 
@@ -92,7 +93,7 @@ public class IexCloudGrpcServer {
 				io.grpc.stub.StreamObserver<iexcloud.gen.BalanceSheetsGrpc> responseObserver) {		
 			
 			List<BalanceSheetGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
-					BalanceSheetGrpc.class, BalanceSheets.class, BalanceSheetGrpc.newBuilder());			
+					BalanceSheetGrpc.class, BalanceSheet.class, BalanceSheetGrpc.newBuilder());			
 			BalanceSheetsGrpc response = BalanceSheetsGrpc.newBuilder().addAllBalanceSheetGrpc(statements).build();
 			responseObserver.onNext(response);
 			responseObserver.onCompleted();				
@@ -115,8 +116,8 @@ public class IexCloudGrpcServer {
 		public void getCashflowStatements(iexcloud.gen.Symbol request,
 				io.grpc.stub.StreamObserver<iexcloud.gen.CashflowStatementsGrpc> responseObserver) {
 			
-			List<CashflowStatementGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
-					CashflowStatementGrpc.class, BalanceSheets.class, CashflowStatementGrpc.newBuilder());			
+			List<CashflowStatementGrpc> statements = getStatements(icService.getCashflowStatements(request.getName()).getCashFlow(),
+					CashflowStatementGrpc.class, CashFlow.class, CashflowStatementGrpc.newBuilder());			
 			CashflowStatementsGrpc response = CashflowStatementsGrpc.newBuilder().addAllCashflowStatementGrpc(statements).build();
 			responseObserver.onNext(response);
 			responseObserver.onCompleted();				
@@ -148,15 +149,15 @@ public class IexCloudGrpcServer {
 				}				
 				return grpcStmts;
 			} catch (IllegalAccessException e) {
-				System.out.println(e.getClass().toString() + "______" + e.getMessage());
+				System.err.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (IllegalArgumentException e) {
-				System.out.println(e.getClass().toString() + "______" + e.getMessage());
+				System.err.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (InvocationTargetException e) {
-				System.out.println(e.getClass().toString() + "______" + e.getMessage());
+				System.err.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (NoSuchMethodException e) {
-				System.out.println(e.getClass().toString() + "______" + e.getMessage());
+				System.err.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (SecurityException e) {
-				System.out.println(e.getClass().toString() + "______" + e.getMessage());
+				System.err.println(e.getClass().toString() + "______" + e.getMessage());
 			}			
 			return null;
 		}

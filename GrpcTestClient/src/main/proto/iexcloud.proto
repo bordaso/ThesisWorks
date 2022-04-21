@@ -10,11 +10,11 @@ service IexcloudService {
 
   rpc GetSymbols (NoParam) returns (stream Symbol);
   
-  rpc GetBalancesheets (Symbol) returns (Balancesheets);
+  rpc GetBalancesheets (Symbol) returns (BalanceSheetsGrpc);
     
-  rpc GetIncomeStatements (Symbol) returns (IncomeStatements);
+  rpc GetIncomeStatements (Symbol) returns (IncomeStatementsGrpc);
       
-  rpc GetCashflowStatements (Symbol) returns (CashflowStatements);
+  rpc GetCashflowStatements (Symbol) returns (CashflowStatementsGrpc);
         
   rpc GetPeers (Symbol) returns (stream Symbol);
 
@@ -33,7 +33,7 @@ message Symbol {
   string name = 1;
 }
 
-message Balancesheet {
+message BalanceSheetGrpc {
   DecimalValue currentCash = 1;
   DecimalValue shortTermInvestments = 2;
   DecimalValue receivables = 3;
@@ -60,9 +60,10 @@ message Balancesheet {
   DecimalValue capitalSurplus = 24;
   DecimalValue shareholderEquity = 25;
   DecimalValue netTangibleAssets = 26;
+  string symbol = 27;
 }
 
-message CashflowStatement {
+message CashflowStatementGrpc {
   DecimalValue netIncome = 1;
   DecimalValue depreciation = 2;
   DecimalValue changesInReceivables = 3;
@@ -78,9 +79,10 @@ message CashflowStatement {
   DecimalValue otherFinancingCashFlows = 13;
   DecimalValue cashFlowFinancing = 14;
   DecimalValue exchangeRateEffect = 15;
+  string symbol = 16;
 }
 
-message IncomeStatement {
+message IncomeStatementGrpc {
   DecimalValue totalRevenue = 1;
   DecimalValue costOfRevenue = 2;
   DecimalValue ebit = 3;
@@ -96,16 +98,17 @@ message IncomeStatement {
   DecimalValue pretaxIncome = 13;
   DecimalValue researchAndDevelopment = 14;
   DecimalValue sellingGeneralAndAdmin = 15;
+  string symbol = 16;
 }
 
-message Balancesheets {
-  repeated Balancesheet balancesheet = 1;
+message BalanceSheetsGrpc {
+  repeated BalanceSheetGrpc balanceSheetGrpc = 1;
 }
 
-message CashflowStatements {
-  repeated CashflowStatement CashflowStatement = 1;
+message CashflowStatementsGrpc {
+  repeated CashflowStatementGrpc cashflowStatementGrpc = 1;
 }
 
-message IncomeStatements {
-  repeated IncomeStatement IncomeStatement = 1;
+message IncomeStatementsGrpc {
+  repeated IncomeStatementGrpc incomeStatementGrpc = 1;
 }
