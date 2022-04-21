@@ -41,7 +41,7 @@ public class IexCloudGrpcServer {
 	  /** Start serving requests. */
 	  public void start() throws IOException {
 	    server.start();
-	    System.out.println("Server started, listening on " + port);
+	    System.out.println("GRPC Server started, listening on " + port);
 	    Runtime.getRuntime().addShutdownHook(new Thread() {
 	      @Override
 	      public void run() {
@@ -134,19 +134,19 @@ public class IexCloudGrpcServer {
 			responseObserver.onCompleted();	
 		}
 		
-		private <T extends com.google.protobuf.GeneratedMessageV3, BLDR extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
-		List<T> getStatements(List<R> sheets, Class<?> bsGrpcClass, Class<?> restClass, BLDR builderObj) {
+		private <GRPCTYP extends com.google.protobuf.GeneratedMessageV3, BLDR extends com.google.protobuf.GeneratedMessageV3.Builder<?>, RESTTYP extends Report>  
+		List<GRPCTYP> getStatements(List<RESTTYP> restStmts, Class<?> grpcClass, Class<?> restClass, BLDR builderObj) {
 
 			try {
-				List<T> bseets = new ArrayList<>();				
-				for(R sheet : sheets) {
+				List<GRPCTYP> grpcStmts = new ArrayList<>();				
+				for(RESTTYP restStmt : restStmts) {
 					@SuppressWarnings("unchecked")
-					T bseet = 
-					(T) GrpcRestDtoParser.INSTANCE.parseRestToGrpc(bsGrpcClass, restClass,
-							builderObj, sheet).build();					
-					bseets.add(bseet);
+					GRPCTYP grpcStmt = 
+					(GRPCTYP) GrpcRestDtoParser.INSTANCE.parseRestToGrpc(grpcClass, restClass,
+							builderObj, restStmt).build();					
+					grpcStmts.add(grpcStmt);
 				}				
-				return bseets;
+				return grpcStmts;
 			} catch (IllegalAccessException e) {
 				System.out.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (IllegalArgumentException e) {

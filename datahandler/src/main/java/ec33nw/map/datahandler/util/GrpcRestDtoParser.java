@@ -20,10 +20,10 @@ public class GrpcRestDtoParser{
 		super();
 	}
 	
-	public <B extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
-	B parseRestToGrpc(Class<?> bsGrpcClass, Class<?> restClass, B builderObj, R restObj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException{
+	public <BLDR extends com.google.protobuf.GeneratedMessageV3.Builder<?>, RESTTYP extends Report>  
+	BLDR parseRestToGrpc(Class<?> grpcClass, Class<?> restClass, BLDR builderObj, RESTTYP restObj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException{
 		List<Field> restFields = Arrays.asList(restClass.getDeclaredFields());
-		List<Field> grpcFields = Arrays.asList(bsGrpcClass.getDeclaredFields());	
+		List<Field> grpcFields = Arrays.asList(grpcClass.getDeclaredFields());	
 		for(Field restField : restFields) {
 			for(Field grpcField : grpcFields) {
 				setRestToGrpcField(restField, restObj, grpcField, builderObj);
@@ -34,25 +34,23 @@ public class GrpcRestDtoParser{
 	}
 
 
-	private <B extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
-	void setRestToGrpcField(Field restField, R restObj, Field grpcField, B bsGrpcB) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
+	private <BLDR extends com.google.protobuf.GeneratedMessageV3.Builder<?>, RESTTYP extends Report>  
+	void setRestToGrpcField(Field restField, RESTTYP restObj, Field grpcField, BLDR grpcBuilder) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
 		if((grpcField.getName()+"_").equalsIgnoreCase(restField.getName())) {	
 				try {
 					BigDecimal restValueBd = (BigDecimal)restField.get(restObj);
-					Method setter = bsGrpcB.getClass().getDeclaredMethod("set"+(restField.getName().substring(0, 1).toUpperCase() + restField.getName().substring(1)), DecimalValue.class);
+					Method setter = grpcBuilder.getClass().getDeclaredMethod("set"+(restField.getName().substring(0, 1).toUpperCase() + restField.getName().substring(1)), DecimalValue.class);
 					DecimalValue serializedBd = DecimalValue.newBuilder()
 					        .setScale(restValueBd.scale())
 					        .setPrecision(restValueBd.precision())
 					        .setValue(ByteString.copyFrom(restValueBd.unscaledValue().toByteArray()))
 					        .build();					
-					setter.invoke(bsGrpcB, serializedBd);
+					setter.invoke(grpcBuilder, serializedBd);
 				} catch (ClassCastException e) {
 					String restValueStr = (String)restField.get(restObj);
-					Method setter = bsGrpcB.getClass().getDeclaredMethod("set"+(restField.getName().substring(0, 1).toUpperCase() + restField.getName().substring(1)), String.class);
-					setter.invoke(bsGrpcB, restValueStr);
+					Method setter = grpcBuilder.getClass().getDeclaredMethod("set"+(restField.getName().substring(0, 1).toUpperCase() + restField.getName().substring(1)), String.class);
+					setter.invoke(grpcBuilder, restValueStr);
 				} 
-		} else {
-			return;
 		}		
 	}	
 }
