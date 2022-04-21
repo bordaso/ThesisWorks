@@ -1,104 +1,123 @@
 package ec33nw.map.datahandler.controllers.iexcloud;
 
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import ec33nw.map.datahandler.controllers.iexcloud.service.IexCloudService;
 import ec33nw.map.datahandler.util.GrpcRestDtoParser;
-import iexcloud.gen.Balancesheet;
+import iexcloud.gen.BalanceSheetGrpc;
+import iexcloud.gen.BalanceSheetsGrpc;
+import iexcloud.gen.CashflowStatementGrpc;
+import iexcloud.gen.CashflowStatementsGrpc;
 import iexcloud.gen.IexcloudServiceGrpc;
+import iexcloud.gen.IncomeStatementGrpc;
+import iexcloud.gen.IncomeStatementsGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import pl.zankowski.iextrading4j.api.stocks.v1.BalanceSheets;
-import pl.zankowski.iextrading4j.client.IEXCloudClient;
-import pl.zankowski.iextrading4j.client.IEXCloudTokenBuilder;
-import pl.zankowski.iextrading4j.client.IEXTradingApiVersion;
-import pl.zankowski.iextrading4j.client.IEXTradingClient;
-import pl.zankowski.iextrading4j.client.rest.request.stocks.v1.BalanceSheetRequestBuilder;
+import pl.zankowski.iextrading4j.api.stocks.v1.IncomeStatement;
+import pl.zankowski.iextrading4j.api.stocks.v1.Report;
 
 public class IexCloudGrpcServer {
-	
-	  private final int port;
-	  private final Server server;
-	  private static final String SANDBOX_TOKEN = "Tpk_2f56411b27df448f80fe029e05d3e67e";
-	  private static final IEXCloudClient cloudClient = IEXTradingClient.create(IEXTradingApiVersion.IEX_CLOUD_STABLE_SANDBOX,
-	            new IEXCloudTokenBuilder()
-	                    .withPublishableToken(SANDBOX_TOKEN)
-	                    .build());
-	
-    ManagedChannel channel = ManagedChannelBuilder
-            .forAddress("localhost", 50051)
-            .usePlaintext()
-            .build();
 
-    public IexCloudGrpcServer(int port) throws IOException {
-        this(ServerBuilder.forPort(port), port);
-      }
+	private final int port;
+	private final Server server;
+	@Autowired
+	private IexCloudService icService;
 
-    public IexCloudGrpcServer(ServerBuilder<?> serverBuilder, int port) {
-      this.port = port;
-      server = serverBuilder.addService(new IexCloudGrpcService())
-          .build();
-    }
-    
-    
-    private static class IexCloudGrpcService extends IexcloudServiceGrpc.IexcloudServiceImplBase {
-    	
-    	@Override
-        public void getSymbols(iexcloud.gen.NoParam request,
-                io.grpc.stub.StreamObserver<iexcloud.gen.Symbol> responseObserver) {
+	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50051).usePlaintext().build();
 
-            }
-    	
-    	@Override
-        public void getBalancesheets(iexcloud.gen.Symbol request,
-                io.grpc.stub.StreamObserver<iexcloud.gen.Balancesheets> responseObserver) {
-    		final BalanceSheets balanceSheets = cloudClient.executeRequest(new BalanceSheetRequestBuilder()
-    				.withSymbol(request.getName())
-    		        .build());		
-    		
-    		
-    		
-    		try {
-    			Balancesheet bseet = GrpcRestDtoParser.INSTANCE.parseRestToGrpc(Balancesheet.class, BalanceSheets.class, Balancesheet.newBuilder(), balanceSheets.getBalanceSheet().get(0)).build();
-    			System.out.println("______"+bseet.toString());
-    		} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	public IexCloudGrpcServer(int port) throws IOException {
+		this(ServerBuilder.forPort(port), port);
+	}
+
+	public IexCloudGrpcServer(ServerBuilder<?> serverBuilder, int port) {
+		this.port = port;
+		server = serverBuilder.addService(new IexCloudGrpcService()).build();
+	}
+
+	private class IexCloudGrpcService extends IexcloudServiceGrpc.IexcloudServiceImplBase {
+
+		@Override
+		public void getSymbols(iexcloud.gen.NoParam request,
+				io.grpc.stub.StreamObserver<iexcloud.gen.Symbol> responseObserver) {
+
+		}
+
+		@Override
+		public void getBalancesheets(iexcloud.gen.Symbol request,
+				io.grpc.stub.StreamObserver<iexcloud.gen.BalanceSheetsGrpc> responseObserver) {		
+			
+			List<? extends BalanceSheetGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
+					BalanceSheetGrpc.class, BalanceSheets.class, BalanceSheetGrpc.newBuilder());			
+			BalanceSheetsGrpc response = BalanceSheetsGrpc.newBuilder().addAllBalanceSheetGrpc(statements).build();
+			responseObserver.onNext(response);
+			responseObserver.onCompleted();				
+			System.out.println("balance sheet response______" + response.toString());
+		}
+
+		@Override
+		public void getIncomeStatements(iexcloud.gen.Symbol request,
+				io.grpc.stub.StreamObserver<iexcloud.gen.IncomeStatementsGrpc> responseObserver) {
+			
+			List<? extends IncomeStatementGrpc> statements = getStatements(icService.getIncomeStatements(request.getName()).getIncome(),
+					IncomeStatementGrpc.class, IncomeStatement.class, IncomeStatementGrpc.newBuilder());			
+			IncomeStatementsGrpc response = IncomeStatementsGrpc.newBuilder().addAllIncomeStatementGrpc(statements).build();
+			responseObserver.onNext(response);
+			responseObserver.onCompleted();				
+			System.out.println("income response______" + response.toString());
+		}
+
+		@Override
+		public void getCashflowStatements(iexcloud.gen.Symbol request,
+				io.grpc.stub.StreamObserver<iexcloud.gen.CashflowStatementsGrpc> responseObserver) {
+			
+			List<? extends CashflowStatementGrpc> statements = getStatements(icService.getBalanceSheets(request.getName()).getBalanceSheet(),
+					CashflowStatementGrpc.class, BalanceSheets.class, CashflowStatementGrpc.newBuilder());			
+			CashflowStatementsGrpc response = CashflowStatementsGrpc.newBuilder().addAllCashflowStatementGrpc(statements).build();
+			responseObserver.onNext(response);
+			responseObserver.onCompleted();				
+			System.out.println("cash flow response______" + response.toString());
+		}
+
+		@Override
+		public void getPeers(iexcloud.gen.Symbol request,
+				io.grpc.stub.StreamObserver<iexcloud.gen.Symbol> responseObserver) {
+
+		}
+		
+		private <T extends com.google.protobuf.GeneratedMessageV3, BLDR extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
+		List<T> getStatements(List<R> sheets, Class<?> bsGrpcClass, Class<?> restClass, BLDR builderObj) {
+
+			try {
+				List<T> bseets = new ArrayList<>();				
+				for(R sheet : sheets) {
+					@SuppressWarnings("unchecked")
+					T bseet = 
+					(T) GrpcRestDtoParser.INSTANCE.parseRestToGrpc(bsGrpcClass, restClass,
+							builderObj, sheet).build();					
+					bseets.add(bseet);
+				}				
+				return bseets;
+			} catch (IllegalAccessException e) {
+				System.out.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getClass().toString() + "______" + e.getMessage());
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            }
+				System.out.println(e.getClass().toString() + "______" + e.getMessage());
+			}			
+			return null;
+		}
+	}
 
-		@Override
-        public void getIncomeStatements(iexcloud.gen.Symbol request,
-            io.grpc.stub.StreamObserver<iexcloud.gen.IncomeStatements> responseObserver) {
-          
-        }
-
-		@Override
-        public void getCashflowStatements(iexcloud.gen.Symbol request,
-            io.grpc.stub.StreamObserver<iexcloud.gen.CashflowStatements> responseObserver) {
-          
-        }
-
-		@Override
-        public void getPeers(iexcloud.gen.Symbol request,
-            io.grpc.stub.StreamObserver<iexcloud.gen.Symbol> responseObserver) {
-          
-        }
-    }
-    
 }

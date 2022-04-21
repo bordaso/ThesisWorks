@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.google.protobuf.ByteString;
 
-import iexcloud.gen.Balancesheet.Builder;
 import iexcloud.gen.DecimalValue;
 import pl.zankowski.iextrading4j.api.stocks.v1.Report;
 
@@ -21,7 +20,7 @@ public class GrpcRestDtoParser{
 		super();
 	}
 	
-	public <B extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>, R extends Report>  
+	public <B extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
 	B parseRestToGrpc(Class<?> bsGrpcClass, Class<?> restClass, B builderObj, R restObj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException{
 		List<Field> restFields = Arrays.asList(restClass.getDeclaredFields());
 		List<Field> grpcFields = Arrays.asList(bsGrpcClass.getDeclaredFields());	
@@ -35,7 +34,7 @@ public class GrpcRestDtoParser{
 	}
 
 
-	private <B extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>, R extends Report>  
+	private <B extends com.google.protobuf.GeneratedMessageV3.Builder<?>, R extends Report>  
 	void setRestToGrpcField(Field restField, R restObj, Field grpcField, B bsGrpcB) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
 		if((grpcField.getName()+"_").equalsIgnoreCase(restField.getName())) {	
 				try {
