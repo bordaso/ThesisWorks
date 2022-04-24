@@ -1,7 +1,5 @@
 package ec33nw.map.GrpcTestClient;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -17,6 +15,8 @@ public class GrpcTestClientApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GrpcTestClientApplication.class, args);
 		String target = "localhost:8980";
+		String targetK8s = "192.168.49.2:30980";
+
 		if (args.length > 0) {
 			if ("--help".equals(args[0])) {
 				System.err.println("Usage: [target]");
@@ -27,7 +27,7 @@ public class GrpcTestClientApplication {
 			target = args[0];
 		}
 
-		ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+		ManagedChannel channel = ManagedChannelBuilder.forTarget(targetK8s).usePlaintext().build();
 		client = new GrpcTestClient(channel);
 
 	/*	try {
