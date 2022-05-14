@@ -28,7 +28,7 @@ public class IexCloudService {
 
 	public List<ExchangeSymbol> getSymbols() {
 		final List<ExchangeSymbol> symbols = cloudClient.executeRequest(new SymbolsRequestBuilder().build());
-		return symbols;
+		return symbols.subList(0, 101);
 	}
 
 	public BalanceSheets getBalanceSheets(String symbol) {

@@ -6,7 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ec33nw.map.GrpcTestClient.impl.GrpcTestClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+@EnableSwagger2
 @SpringBootApplication
 public class GrpcTestClientApplication {
 
@@ -14,6 +16,7 @@ public class GrpcTestClientApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GrpcTestClientApplication.class, args);
+		//grpc server ports
 		String target = "localhost:8980";
 		String targetK8s = "192.168.49.2:30980";
 
@@ -27,7 +30,7 @@ public class GrpcTestClientApplication {
 			target = args[0];
 		}
 
-		ManagedChannel channel = ManagedChannelBuilder.forTarget(targetK8s).usePlaintext().build();
+		ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
 		client = new GrpcTestClient(channel);
 
 	/*	try {
