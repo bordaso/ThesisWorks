@@ -1,25 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ec33nw-analytics
+  name: ec33nw-map-gui
   labels:
-    app: ec33nw-analytics
+    app: ec33nw-map-gui
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: ec33nw-analytics
+      app: ec33nw-map-gui
   template:
     metadata:
       labels:
-        app: ec33nw-analytics
+        app: ec33nw-map-gui
     spec:
       containers:
-      - name: ec33nw-analytics
-        image: zedas/ec33nw-map-analytics
+      - name: ec33nw-map-gui
+        image: zedas/ec33nw-map-gui
         ports:
-        - containerPort: 8081
-        - containerPort: 8981
+        - containerPort: 80
         imagePullPolicy: IfNotPresent
 
 ---
@@ -27,26 +26,22 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ec33nw-analytics-service
+  name: ec33nw-map-gui-service
 spec:
   selector:
-    app: ec33nw-analytics
+    app: ec33nw-map-gui
   ports:
-    - port: 8081
-      name: resttestport
+    - port: 80
+      name: defaultnginxport
       protocol: TCP
-      targetPort: 8081
-    - port: 8981
-      name: grcpport
-      protocol: TCP
-      targetPort: 8981
+      targetPort: 80
 
 ---
 
 apiVersion: v1
 kind: Ingress
 metadata:
-  name: ec33nw-analytics-ingress
+  name: ec33nw-map-gui-ingress
 spec:
   rules:
   - host: ec33nw.map.analytics.com
@@ -56,9 +51,9 @@ spec:
         pathType: Exact  
         backend:
           service:
-            name: ec33nw-analytics-service
+            name: ec33nw-map-gui-service
             port: 
-              number: 8081
+              number: 80
 
 
 
