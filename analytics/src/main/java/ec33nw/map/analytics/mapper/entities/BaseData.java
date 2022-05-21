@@ -1,4 +1,4 @@
-package ec33nw.map.GrpcTestClient.mapper.entities;
+package ec33nw.map.analytics.mapper.entities;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package ec33nw.map.GrpcTestClient.mapper.entities;
+package ec33nw.map.analytics.mapper.entities;
 
 import static pl.zankowski.iextrading4j.api.util.ListUtil.immutableList;
 

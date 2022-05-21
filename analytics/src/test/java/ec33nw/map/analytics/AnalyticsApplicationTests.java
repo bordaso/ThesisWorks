@@ -1,10 +1,10 @@
-package ec33nw.map.GrpcTestClient;
+package ec33nw.map.analytics;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GrpcTestClientApplicationTests {
+class AnalyticsApplicationTests {
 
 	@Test
 	void contextLoads() {

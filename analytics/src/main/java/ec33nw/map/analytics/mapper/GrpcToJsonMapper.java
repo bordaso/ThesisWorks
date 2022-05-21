@@ -1,4 +1,4 @@
-package ec33nw.map.GrpcTestClient.mapper;
+package ec33nw.map.analytics.mapper;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -9,13 +9,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
-import ec33nw.map.GrpcTestClient.GrpcTestClientApplication;
-import ec33nw.map.GrpcTestClient.mapper.entities.BalanceSheet;
-import ec33nw.map.GrpcTestClient.mapper.entities.BalanceSheets;
-import ec33nw.map.GrpcTestClient.mapper.entities.CashFlow;
-import ec33nw.map.GrpcTestClient.mapper.entities.CashFlows;
-import ec33nw.map.GrpcTestClient.mapper.entities.IncomeStatement;
-import ec33nw.map.GrpcTestClient.mapper.entities.IncomeStatements;
+import ec33nw.map.analytics.AnalyticsApplication;
+import ec33nw.map.analytics.mapper.entities.BalanceSheet;
+import ec33nw.map.analytics.mapper.entities.BalanceSheets;
+import ec33nw.map.analytics.mapper.entities.CashFlow;
+import ec33nw.map.analytics.mapper.entities.CashFlows;
+import ec33nw.map.analytics.mapper.entities.IncomeStatement;
+import ec33nw.map.analytics.mapper.entities.IncomeStatements;
 import iexcloud.gen.BalanceSheetGrpc;
 import iexcloud.gen.BalanceSheetsGrpc;
 import iexcloud.gen.CashflowStatementGrpc;

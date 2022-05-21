@@ -1,4 +1,4 @@
-package ec33nw.map.GrpcTestClient.mapper.entities;
+package ec33nw.map.analytics.mapper.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

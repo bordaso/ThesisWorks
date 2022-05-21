@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>ec33nw.map</groupId>
-	<artifactId>GrpcTestClient</artifactId>
+	<artifactId>analytics</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>GrpcTestClient</name>
-	<description>Client For GRPC testing</description>
+	<name>analytics</name>
+	<description>Analytics service is responsible for providing integration with the Datahandler service and the frontend, as well as providing tools for analysis</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>

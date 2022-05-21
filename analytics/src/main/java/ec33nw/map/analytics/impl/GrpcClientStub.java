@@ -1,4 +1,4 @@
-package ec33nw.map.GrpcTestClient.impl;
+package ec33nw.map.analytics.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,12 +15,12 @@ import iexcloud.gen.Symbol;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
-public class GrpcTestClient {
+public class GrpcClientStub {
 
 	private final IexcloudServiceBlockingStub blockingStub;
 	private final IexcloudServiceStub asyncStub;
 
-	public GrpcTestClient(Channel channel) {
+	public GrpcClientStub(Channel channel) {
 		blockingStub = IexcloudServiceGrpc.newBlockingStub(channel);
 		asyncStub = IexcloudServiceGrpc.newStub(channel);
 	}
