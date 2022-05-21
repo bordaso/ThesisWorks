@@ -1,11 +1,11 @@
 {
-  "name": "test-me-ang",
+  "name": "map-gui",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build-api": "openapi-generator-cli generate -o ./api -i http://localhost:8081/v3/api-docs/ -g typescript-angular",
+    "build-api": "openapi-generator-cli generate -o ./api -i http://172.17.0.8:8081/v3/api-docs/ -g typescript-angular",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

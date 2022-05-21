@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ec33nw-analytics
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ec33nw-analytics

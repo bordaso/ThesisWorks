@@ -1,4 +1,11 @@
-FROM openjdk:8
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} analytics-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/analytics-0.0.1-SNAPSHOT.jar"]
+# stage 1
+FROM node:latest as node
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build-api
+RUN npm run build --prod
+
+# stage 2
+FROM nginx:alpine
+COPY --from=node /app/dist/map-gui /usr/share/nginx/html
