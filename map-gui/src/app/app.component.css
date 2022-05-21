@@ -1,0 +1,11 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.example-icon {
+  margin-right: 5px;
+}
+
+#toolbar {
+  background: #3677a8;
+}
