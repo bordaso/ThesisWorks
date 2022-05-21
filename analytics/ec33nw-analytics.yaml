@@ -41,24 +41,3 @@ spec:
       protocol: TCP
       targetPort: 8981
 
----
-
-apiVersion: v1
-kind: Ingress
-metadata:
-  name: ec33nw-analytics-ingress
-spec:
-  rules:
-  - host: ec33nw.map.analytics.com
-    http:
-      paths:
-      - path: /
-        pathType: Exact  
-        backend:
-          service:
-            name: ec33nw-analytics-service
-            port: 
-              number: 8081
-
-
-

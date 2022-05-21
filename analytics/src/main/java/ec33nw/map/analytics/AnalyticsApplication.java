@@ -19,18 +19,19 @@ public class AnalyticsApplication {
 		//grpc server ports
 		String target = "localhost:8980";
 		String targetK8s = "192.168.49.2:30980";
+		String targetInnnerK8s = "172.17.0.6:8980";
 
 		if (args.length > 0) {
 			if ("--help".equals(args[0])) {
-				System.err.println("Usage: [target]");
+				System.err.println("Usage: [targetInnnerK8s]");
 				System.err.println("");
-				System.err.println("  target  The server to connect to. Defaults to " + targetK8s);
+				System.err.println("  target  The server to connect to. Defaults to " + targetInnnerK8s);
 				System.exit(1);
 			}
-			targetK8s = args[0];
+			targetInnnerK8s = args[0];
 		}
 
-		ManagedChannel channel = ManagedChannelBuilder.forTarget(targetK8s).usePlaintext().build();
+		ManagedChannel channel = ManagedChannelBuilder.forTarget(targetInnnerK8s).usePlaintext().build();
 		client = new GrpcClientStub(channel);
 
 	/*	try {
