@@ -1,0 +1,34 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
+  <h1
+    mat-dialog-title
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    cdkDragHandle
+  >
+    Define valuation
+  </h1>
+  <div mat-dialog-content>
+    <mat-form-field appearance="standard">
+      <input
+        type="text"
+        placeholder="Valuation name"
+        aria-label="Valuation name"
+        matInput
+        [formControl]="name"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <input
+        type="text"
+        placeholder="Calculation"
+        aria-label="Calculation"
+        matInput
+        [formControl]="calcResult"
+      />
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onAddClick()">Add</button>
+    <button mat-button (click)="onNoClick()">Close</button>
+  </div>
+</div>
