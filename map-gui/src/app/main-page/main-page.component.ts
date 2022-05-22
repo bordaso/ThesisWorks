@@ -62,8 +62,6 @@ export class MainPageComponent implements OnInit {
     private stmtService: GrpcTestRestControllerService,
     public dialog: MatDialog
   ) {
-    this.stmtService.configuration.basePath =
-      'http://ec33nw.map.analytics.api.com/';
     this.$stmtsObs.push(this.stmtService.getBalancesheetUsingGET(this.symbol));
     this.$stmtsObs.push(
       this.stmtService.getIncomeStatementUsingGET(this.symbol)
