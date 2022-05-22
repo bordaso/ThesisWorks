@@ -19,7 +19,7 @@ public class AnalyticsApplication {
 		//grpc server ports
 		String target = "localhost:8980";
 		String targetK8s = "192.168.49.2:30980";
-		String targetInnnerK8s = "172.17.0.6:8980";
+		String targetInnnerK8s = "172.17.0.4:8980";
 
 		if (args.length > 0) {
 			if ("--help".equals(args[0])) {

@@ -25,7 +25,8 @@ export class AppComponent implements OnInit {
     private stmtService: GrpcTestRestControllerService,
     private elRef: ElementRef
   ) {
-    this.stmtService.configuration.basePath = 'http://172.17.0.8:8081/';
+    this.stmtService.configuration.basePath =
+      'http://ec33nw.map.analytics.api.com/';
     this.content = elRef;
     timer(1000).subscribe(() =>
       this.stmtService.getSymbolsUsingGET().subscribe((ressym) => {

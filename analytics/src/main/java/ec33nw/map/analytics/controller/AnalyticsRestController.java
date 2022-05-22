@@ -22,31 +22,31 @@ import iexcloud.gen.Symbol;
 public class AnalyticsRestController {
 
 	@GetMapping(path = "symbols", produces=MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins = "http://localhost:4200")
+	@CrossOrigin(origins = {"http://ec33nw.map.analytics.com", "http://ec33nw.map.analytics.api.com"})
 	public List<String> getSymbols() {		
 		return AnalyticsApplication.client.getSymbols();
 	}
 	
 	@GetMapping(path = "balancesheet", produces=MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins = "http://localhost:4200")
+	@CrossOrigin(origins = {"http://ec33nw.map.analytics.com", "http://ec33nw.map.analytics.api.com"})
 	public BalanceSheets getBalancesheet(@QueryParam(value = "symbol") String symbol) {	
 		return GrpcToJsonMapper.INSTANCE.map(AnalyticsApplication.client.getBalancesheets(Symbol.newBuilder().setName(symbol).build()));
 	}
 	
 	@GetMapping(path = "income", produces=MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins = "http://localhost:4200")
+	@CrossOrigin(origins = {"http://ec33nw.map.analytics.com", "http://ec33nw.map.analytics.api.com"})
 	public IncomeStatements getIncomeStatement(@QueryParam(value = "symbol") String symbol) {		
 		return GrpcToJsonMapper.INSTANCE.map(AnalyticsApplication.client.getIncomeStatements(Symbol.newBuilder().setName(symbol).build()));
 	}
 	
 	@GetMapping(path = "cashflow", produces=MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins = "http://localhost:4200")
+	@CrossOrigin(origins = {"http://ec33nw.map.analytics.com", "http://ec33nw.map.analytics.api.com"})
 	public CashFlows getCashflowStatement(@QueryParam(value = "symbol") String symbol) {			
 		return GrpcToJsonMapper.INSTANCE.map(AnalyticsApplication.client.getCashflowStatements(Symbol.newBuilder().setName(symbol).build()));
 	}
 	
 	@GetMapping(path = "peers", produces=MediaType.APPLICATION_JSON_VALUE)
-	@CrossOrigin(origins = "http://localhost:4200")
+	@CrossOrigin(origins = {"http://ec33nw.map.analytics.com", "http://ec33nw.map.analytics.api.com"})
 	public List<String> getPeers(@QueryParam(value = "symbol") String symbol) {		
 		return AnalyticsApplication.client.getPeers(Symbol.newBuilder().setName(symbol).build());
 	}

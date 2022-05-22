@@ -20,7 +20,7 @@ spec:
         ports:
         - containerPort: 8081
         - containerPort: 8981
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
 
 ---
 
@@ -40,4 +40,6 @@ spec:
       name: grcpport
       protocol: TCP
       targetPort: 8981
+      
+
 
