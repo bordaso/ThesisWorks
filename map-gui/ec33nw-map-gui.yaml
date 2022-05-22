@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ec33nw-map-gui
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ec33nw-map-gui
@@ -19,7 +19,7 @@ spec:
         image: zedas/ec33nw-map-gui
         ports:
         - containerPort: 80
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
 
 ---
 
@@ -38,7 +38,7 @@ spec:
 
 ---
 
-apiVersion: v1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ec33nw-map-gui-ingress
